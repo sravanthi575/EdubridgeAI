@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Resume Builder{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Resume Builder</h1>
+  <p class="muted">Your details are used only to build the preview and are not stored.</p>
+  <form method="post" class="form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Full name <input name="name" required maxlength="100" value="{{ form.get('name','') }}"></label>
+    <label>Email <input type="email" name="email" maxlength="150" value="{{ form.get('email','') }}"></label>
+    <label>Phone <input name="phone" maxlength="30" value="{{ form.get('phone','') }}"></label>
+    <label>Location <input name="location" maxlength="100" value="{{ form.get('location','') }}"></label>
+    <label>Links (GitHub / LinkedIn) <input name="links" maxlength="200" value="{{ form.get('links','') }}"></label>
+    <label>Summary (2-3 lines) <textarea name="summary" rows="3" maxlength="600">{{ form.get('summary','') }}</textarea></label>
+    <label>Education (one per line) <textarea name="education" rows="3" placeholder="B.Tech CSE, ABC College, 2026, 8.1 CGPA">{{ form.get('education','') }}</textarea></label>
+    <label>Skills (comma separated) <input name="skills" value="{{ form.get('skills','') }}" placeholder="Python, SQL, HTML, CSS"></label>
+    <label>Projects (one per line) <textarea name="projects" rows="4" placeholder="Attendance system – Flask + SQLite app that ...">{{ form.get('projects','') }}</textarea></label>
+    <label>Experience / internships (one per line) <textarea name="experience" rows="3">{{ form.get('experience','') }}</textarea></label>
+    <label>Certifications (one per line) <textarea name="certifications" rows="2">{{ form.get('certifications','') }}</textarea></label>
+    <button class="btn" type="submit">Generate resume</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Quiz: {{ course.title }}{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <nav class="crumbs" aria-label="Breadcrumb"><span><a href="{{ url_for('quizzes.index') }}">Practice tests</a></span><span>{{ course.title }}</span></nav>
+  <h1>{{ course.title }} quiz</h1>
+  <form method="post" id="quiz-form" action="{{ url_for('quizzes.submit', slug=course.slug) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="qids" value="{{ questions|map(attribute='id')|join(',') }}">
+    <input type="hidden" name="difficulty" value="{{ difficulty }}">
+    <div class="quiz-bar" role="status">
+      <div class="row"><span><span id="answered">0</span> of {{ questions|length }} answered</span><span class="muted small">Difficulty: {{ difficulty }}</span></div>
+      <div class="progress"><span id="quiz-fill" style="width:0"></span></div>
+    </div>
+    {% for q in questions %}
+    <fieldset class="question">
+      <legend>{{ loop.index }}. {{ q.text }}</legend>
+      {% for letter, text in q.options %}
+        <label class="option"><input type="radio" name="q{{ q.id }}" value="{{ letter }}"><span><strong>{{ letter }}.</strong> {{ text }}</span></label>
+      {% endfor %}
+    </fieldset>
+    {% endfor %}
+    <button class="btn" type="submit" data-loading="Checking your answers…">Submit answers</button>
+  </form>
+</section>
+{% endblock %}

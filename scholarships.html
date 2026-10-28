@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Scholarships and Free Courses{% endblock %}
+{% block content %}
+<section class="container">
+  <h1>Scholarships and Free Courses</h1>
+  <div class="flash flash-info static" role="note">{{ icon('info') }}<span>Details change often. Always confirm eligibility, amounts and deadlines on the <strong>official website</strong> before applying. “Last verified” shows when our team last checked the listing.</span></div>
+  <form method="get" class="filters">
+    <input type="search" name="q" value="{{ q }}" placeholder="Search" aria-label="Search" maxlength="80">
+    <select name="category" onchange="this.form.submit()" aria-label="Category"><option value="">All types</option>{% for c in categories %}<option {{ 'selected' if c == category }}>{{ c }}</option>{% endfor %}</select>
+    <button class="btn" type="submit">Filter</button>
+  </form>
+  <div class="grid">
+    {% for s in items %}
+    <article class="card">
+      <span class="tag">{{ s.category }}</span>
+      <h3>{{ s.title }}</h3>
+      <p class="muted small">{{ s.provider }}</p>
+      <p>{{ s.eligibility }}</p>
+      <p class="small"><strong>Deadline:</strong> {{ s.deadline or 'See official site' }}<br>
+        <strong>Last verified:</strong> {{ s.last_verified.strftime('%d %b %Y') if s.last_verified else 'Not yet verified – check the official site' }}</p>
+      <a class="btn btn-small" href="{{ s.link }}" target="_blank" rel="noopener noreferrer">Official site ↗</a>
+    </article>
+    {% else %}<p>No listings match.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

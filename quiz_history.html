@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Quiz history{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Quiz history</h1>
+  {% if attempts %}
+  <table class="table"><thead><tr><th>Date</th><th>Course</th><th>Difficulty</th><th>Score</th></tr></thead><tbody>
+    {% for a in attempts %}<tr><td>{{ a.created_at.strftime('%d %b %Y %H:%M') }}</td><td>{{ a.course.title }}</td><td>{{ a.difficulty }}</td><td>{{ a.score }}/{{ a.total }} ({{ a.percent }}%)</td></tr>{% endfor %}
+  </tbody></table>
+  {% else %}<p>No quizzes yet. <a href="{{ url_for('quizzes.index') }}">Take your first one</a>.</p>{% endif %}
+</section>
+{% endblock %}

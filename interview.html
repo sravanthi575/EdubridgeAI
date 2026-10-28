@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Interview Questions{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Interview Questions</h1>
+  <p>{% for c in categories %}<a class="tag big {{ 'active' if c == category }}" href="{{ url_for('career.interview', category=c) }}">{{ c }}</a> {% endfor %}</p>
+  {% for q, a in questions %}
+  <div class="card qa">
+    <p><strong>{{ loop.index }}. {{ q }}</strong></p>
+    <button class="btn btn-small btn-outline" data-reveal="ans{{ loop.index }}" type="button">Show sample answer</button>
+    <p id="ans{{ loop.index }}" class="answer" hidden>{{ a }}</p>
+  </div>
+  {% endfor %}
+  <p><a class="btn" href="{{ url_for('career.mock', category=category) }}">Practise as a mock interview</a></p>
+</section>
+{% endblock %}

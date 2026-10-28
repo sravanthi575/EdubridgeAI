@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}New post{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>New post</h1>
+  <form method="post" class="form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Type <select name="category">{% for c in categories %}<option {{ 'selected' if form.get('category') == c }}>{{ c }}</option>{% endfor %}</select></label>
+    <label>Title <input name="title" required minlength="5" maxlength="150" value="{{ form.get('title','') }}"></label>
+    <label>Message <textarea name="body" rows="8" required minlength="10" maxlength="5000">{{ form.get('body','') }}</textarea></label>
+    <p class="muted small">Do not share passwords, phone numbers or other private information.</p>
+    <button class="btn" type="submit">Publish</button>
+  </form>
+</section>
+{% endblock %}

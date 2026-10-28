@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, cat_class %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block content %}
+<section class="course-hero {{ cat_class(course) }}">
+  <div class="container">
+    {{ badge(course) }}
+    <div>
+      <nav class="crumbs" aria-label="Breadcrumb"><span><a href="{{ url_for('courses.course_list') }}">Courses</a></span><span>{{ course.category }}</span></nav>
+      <h1>{{ course.title }}</h1>
+      <p>{{ course.description }}</p>
+    </div>
+  </div>
+</section>
+<section class="container">
+  <div class="detail-grid">
+    <div>
+      <h2 style="margin-top:0">Lessons</h2>
+      <ol class="lesson-list">
+        {% for l in course.lessons %}
+        <li class="{{ 'is-done' if l.id in done_ids }}">
+          <span class="grow">{% if current_user.is_authenticated %}<a href="{{ url_for('courses.lesson', slug=course.slug, lesson_id=l.id) }}">{{ l.title }}</a>{% else %}<strong>{{ l.title }}</strong>{% endif %}</span>
+          <span class="muted small">{{ l.minutes }} min</span>
+        </li>
+        {% endfor %}
+      </ol>
+    </div>
+    <aside class="card side-card" aria-label="Course summary">
+      <ul class="facts-list">
+        <li><span>Level</span><strong>{{ course.level }}</strong></li>
+        <li><span>Lessons</span><strong>{{ course.lessons|length }}</strong></li>
+        <li><span>Total time</span><strong>about {{ course.lessons|sum(attribute='minutes') }} min</strong></li>
+        <li><span>Quiz questions</span><strong>{{ course.questions|length }}</strong></li>
+      </ul>
+      {% if current_user.is_authenticated %}
+        {% if enrolled %}
+          <div class="progress" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"><span style="width: {{ percent }}%"></span></div>
+          <p class="muted small" style="margin:6px 0 14px">{{ percent }}% complete</p>
+          {% set nxt = course.lessons|rejectattr('id', 'in', done_ids)|first %}
+          {% if nxt %}<a class="btn" style="width:100%" href="{{ url_for('courses.lesson', slug=course.slug, lesson_id=nxt.id) }}">{{ 'Continue learning' if percent else 'Start the first lesson' }}</a>
+          {% else %}<p class="done">You finished every lesson.</p>{% endif %}
+        {% else %}
+          <form method="post" action="{{ url_for('courses.enroll_course', slug=course.slug) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn" style="width:100%" type="submit">Enrol for free</button>
+          </form>
+        {% endif %}
+        {% if course.questions %}<p style="margin:12px 0 0"><a class="btn btn-outline" style="width:100%" href="{{ url_for('quizzes.take', slug=course.slug) }}">Practise with a quiz</a></p>{% endif %}
+      {% else %}
+        <a class="btn" style="width:100%" href="{{ url_for('auth.login', next=request.path) }}">Log in to start</a>
+        <p class="muted small" style="margin:10px 0 0">New here? <a href="{{ url_for('auth.register') }}">Create a free account</a>.</p>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}

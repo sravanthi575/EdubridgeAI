@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Your Resume{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <p class="noprint"><button class="btn" onclick="window.print()">Print / Save as PDF</button> <a class="btn btn-outline" href="{{ url_for('career.resume') }}">Edit details</a></p>
+  <article class="resume">
+    <h1>{{ r.name }}</h1>
+    <p class="contact">{{ [r.email, r.phone, r.location, r.links]|select|join(' · ') }}</p>
+    {% if r.summary %}<h2>Summary</h2><p>{{ r.summary }}</p>{% endif %}
+    {% if r.skills %}<h2>Skills</h2><p>{{ r.skills|join(' · ') }}</p>{% endif %}
+    {% if r.projects %}<h2>Projects</h2><ul>{% for x in r.projects %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+    {% if r.experience %}<h2>Experience</h2><ul>{% for x in r.experience %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+    {% if r.education %}<h2>Education</h2><ul>{% for x in r.education %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+    {% if r.certifications %}<h2>Certifications</h2><ul>{% for x in r.certifications %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>My profile</h1>
+  <form method="post" class="form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Full name <input name="name" required maxlength="100" value="{{ current_user.name }}"></label>
+    <label>Email <input value="{{ current_user.email }}" disabled></label>
+    <label>Education level
+      <select name="education_level"><option value="">Select...</option>
+        {% for l in levels %}<option {{ 'selected' if current_user.education_level == l }}>{{ l }}</option>{% endfor %}
+      </select></label>
+    <label>Learning interests <input name="interests" maxlength="255" value="{{ current_user.interests }}"></label>
+    <label>Learning goal
+      <select name="goal">{% for k, t in goals %}<option value="{{ k }}" {{ 'selected' if current_user.goal == k }}>{{ t }}</option>{% endfor %}</select></label>
+    <label>Current level
+      <select name="level">{% for l in learn_levels %}<option value="{{ l }}" {{ 'selected' if current_user.level == l }}>{{ l|capitalize }}</option>{% endfor %}</select></label>
+    <label>Study time per day (minutes) <input type="number" name="daily_minutes" min="15" max="480" value="{{ current_user.daily_minutes }}"></label>
+    <button class="btn" type="submit">Save profile</button>
+  </form>
+
+  <h2>Change password</h2>
+  <form method="post" action="{{ url_for('auth.change_password') }}" class="form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Current password <input type="password" name="current_password" required autocomplete="current-password"></label>
+    <label>New password <input type="password" name="new_password" required minlength="8" autocomplete="new-password"></label>
+    <label>Confirm new password <input type="password" name="confirm_password" required autocomplete="new-password"></label>
+    <button class="btn" type="submit">Change password</button>
+  </form>
+</section>
+{% endblock %}

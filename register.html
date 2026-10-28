@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, illus, field %}
+{% block title %}Create your free account{% endblock %}
+{% block content %}
+<section class="container">
+  <div class="auth">
+    <aside>
+      <h1>Create your free account</h1>
+      <p>An account saves your progress and quiz scores so you can pick up where you stopped.</p>
+      <ul><li>Every course and quiz is free</li><li>Your learning streak and dashboard</li><li>A personal learning path</li><li>AI tutor, community and career tools</li></ul>
+      {{ illus('books') }}
+    </aside>
+    <form method="post" class="form card" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if errors %}
+      <div class="error-summary" role="alert" tabindex="-1" id="error-summary">
+        <h2>{{ icon('alert') }} Please fix {{ errors|length }} thing{{ '' if errors|length == 1 else 's' }} to continue</h2>
+        <ul>{% for f, msg in errors.items() %}<li><a href="#f-{{ f }}">{{ msg }}</a></li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {{ field('name','Full name', value=form.get('name',''), errors=errors, autocomplete='name', maxlength=100, minlength=2) }}
+      {{ field('email','Email address', type='email', value=form.get('email',''), errors=errors, autocomplete='email', maxlength=255) }}
+      {{ field('password','Password', type='password', errors=errors, autocomplete='new-password', minlength=8, hint='At least 8 characters, with a letter and a number.') }}
+      {{ field('confirm','Confirm password', type='password', errors=errors, autocomplete='new-password') }}
+      <label for="f-education">Education level <span class="muted opt">(optional)</span>
+        <select id="f-education" name="education_level"><option value="">Select</option>{% for l in levels %}<option {{ 'selected' if form.get('education_level') == l }}>{{ l }}</option>{% endfor %}</select></label>
+      {{ field('interests','What do you want to learn?', value=form.get('interests',''), required=False, maxlength=255, placeholder='For example: Python, web development, AI') }}
+      <button class="btn" type="submit" data-loading="Creating your account…">Create account</button>
+      <p class="muted" style="margin:0">Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+    </form>
+  </div>
+</section>
+{% endblock %}

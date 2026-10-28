@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, illus %}
+{% block title %}AI Tutor{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <div class="page-head page-art"><div><h1>AI Study Assistant</h1><p>Ask about any lesson. Choose your level and language, and the tutor adapts. AI can make mistakes, so double-check important answers.</p></div>{{ illus('chat') }}</div>
+  {% if not configured %}
+    <div class="flash flash-info static" role="note">{{ icon('info') }}<span>The AI is not switched on yet (the site needs an <code>AI_API_KEY</code>). You can still ask questions, and the tutor will suggest the closest lessons.</span></div>
+  {% endif %}
+  <div class="chat" id="chat">
+    <div class="chat-options">
+      <label>Level <select id="chat-level">{% for l in levels %}<option value="{{ l }}">{{ l|capitalize }}</option>{% endfor %}</select></label>
+      <label>Language <select id="chat-language">{% for l in languages %}<option>{{ l }}</option>{% endfor %}</select></label>
+    </div>
+    <div class="chat-log" id="chat-log" aria-live="polite"></div>
+    <div class="chips" aria-label="Example questions">
+      <button class="chip" type="button" data-q="Explain loops in Python with an example">Explain loops</button>
+      <button class="chip" type="button" data-q="What is the difference between HTML and CSS?">HTML vs CSS</button>
+      <button class="chip" type="button" data-q="Explain SQL joins simply">SQL joins</button>
+      <button class="chip" type="button" data-q="Give me five practice questions about Python functions">Practice questions</button>
+    </div>
+    <form id="chat-form" data-url="{{ url_for('ai_tutor.ask') }}">
+      <textarea id="chat-input" rows="1" maxlength="1000" placeholder="Type your question. Enter sends, Shift+Enter adds a new line." aria-label="Your question" required></textarea>
+      <button class="btn" type="submit">{{ icon('play') }} Send</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

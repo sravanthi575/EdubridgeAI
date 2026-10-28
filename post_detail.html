@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <p class="small"><a href="{{ url_for('community.index') }}">Back to community</a></p>
+  {% if post.hidden %}<div class="flash flash-error">This post is hidden from students (moderator view).</div>{% endif %}
+  <span class="tag">{{ post.category }}</span>
+  <h1>{{ post.title }}</h1>
+  <p class="muted small">by {{ post.author.name }} · {{ post.created_at.strftime('%d %b %Y %H:%M') }}</p>
+  <p class="pre">{{ post.body }}</p>
+  {% if current_user.is_authenticated %}
+  <details class="small"><summary>Report this post</summary>
+    <form method="post" action="{{ url_for('community.report', post_id=post.id) }}" class="form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Reason <input name="reason" maxlength="300" placeholder="Spam, abuse, ..."></label>
+      <button class="btn btn-small btn-outline" type="submit">Send report</button>
+    </form></details>
+  {% endif %}
+  <h2>{{ post.replies|length }} repl{{ 'y' if post.replies|length == 1 else 'ies' }}</h2>
+  {% for r in post.replies %}<div class="card"><p class="muted small">{{ r.author.name }} · {{ r.created_at.strftime('%d %b %Y %H:%M') }}</p><p class="pre">{{ r.body }}</p></div>{% endfor %}
+  {% if current_user.is_authenticated %}
+  <form method="post" class="form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Your reply <textarea name="body" rows="4" required minlength="2" maxlength="3000"></textarea></label>
+    <button class="btn" type="submit">Reply</button>
+  </form>
+  {% else %}<p><a href="{{ url_for('auth.login', next=request.path) }}">Log in</a> to reply.</p>{% endif %}
+</section>
+{% endblock %}

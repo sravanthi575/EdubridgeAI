@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Mentors{% endblock %}
+{% block content %}
+<section class="container">
+  <h1>Mentors</h1>
+  <p>Request a mentor session. The administrator reviews requests and connects you; your email is not shown publicly.</p>
+  <div class="grid">
+    {% for m in mentors %}
+    <div class="card"><h3>{{ m.name }}</h3><p class="muted small">{{ m.expertise }}</p><p>{{ m.bio }}</p>
+      {% if current_user.is_authenticated %}
+      <form method="post" action="{{ url_for('community.request_mentor', mentor_id=m.id) }}" class="form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>What do you need help with? <textarea name="message" rows="3" required minlength="10" maxlength="500"></textarea></label>
+        <button class="btn btn-small" type="submit">Request session</button>
+      </form>
+      {% else %}<a href="{{ url_for('auth.login', next=request.path) }}">Log in to request</a>{% endif %}
+    </div>
+    {% else %}<p>No mentors are listed yet. Please check back soon.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Community{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Student Community</h1>
+  <p>Ask questions, share project ideas and find study partners. Be kind and respectful. <a href="{{ url_for('community.mentors') }}">Meet our mentors</a>.</p>
+  <form method="get" class="filters">
+    <input type="search" name="q" value="{{ q }}" placeholder="Search posts" maxlength="80" aria-label="Search">
+    <select name="category" onchange="this.form.submit()" aria-label="Category"><option value="">All</option>{% for c in categories %}<option {{ 'selected' if c == category }}>{{ c }}</option>{% endfor %}</select>
+    <button class="btn" type="submit">Filter</button>
+    <a class="btn" href="{{ url_for('community.new_post') }}">+ New post</a>
+  </form>
+  {% for p in posts %}
+  <div class="card">
+    <span class="tag">{{ p.category }}</span>
+    <h3><a href="{{ url_for('community.post_detail', post_id=p.id) }}">{{ p.title }}</a></h3>
+    <p class="muted small">by {{ p.author.name }} · {{ p.created_at.strftime('%d %b %Y') }} · {{ p.replies|length }} repl{{ 'y' if p.replies|length == 1 else 'ies' }}</p>
+  </div>
+  {% else %}<p>No posts yet. Be the first to start a conversation!</p>{% endfor %}
+</section>
+{% endblock %}

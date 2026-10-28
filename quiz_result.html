@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Quiz result{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <div class="score-wrap">
+    <svg class="score-ring" viewBox="0 0 120 120" role="img" aria-label="Score {{ attempt.percent }} percent" style="--pct: {{ attempt.percent }}">
+      <circle class="track" cx="60" cy="60" r="52"/><circle class="fill" cx="60" cy="60" r="52"/>
+      <text x="60" y="68">{{ attempt.percent }}%</text>
+    </svg>
+    <div>
+      <h1 style="margin:0 0 6px">{{ attempt.score }} out of {{ attempt.total }} correct</h1>
+      <p style="margin:0">{% if attempt.percent >= 80 %}Excellent. You know this topic well.{% elif attempt.percent >= 50 %}Good start. Read the explanations below, then try again.{% else %}This topic needs more practice. Re-read the lessons, then retake the quiz.{% endif %}</p>
+      <p class="row" style="margin-top:14px"><a class="btn" href="{{ url_for('quizzes.take', slug=course.slug) }}">Retake quiz</a><a class="btn btn-outline" href="{{ url_for('courses.course_detail', slug=course.slug) }}">Review lessons</a><a class="btn btn-outline" href="{{ url_for('quizzes.history') }}">My history</a></p>
+    </div>
+  </div>
+  <h2 style="margin-top:0">Review your answers</h2>
+  {% for r in results %}
+  <div class="card result {{ 'ok' if r.ok else 'bad' }}">
+    <p><strong>{{ loop.index }}. {{ r.q.text }}</strong></p>
+    <p class="verdict">{% if r.ok %}Correct: {{ r.q.correct }}{% else %}{{ 'You chose ' ~ r.chosen if r.chosen else 'No answer given' }}. The correct answer is {{ r.q.correct }}.{% endif %}</p>
+    {% if r.q.explanation %}<p class="muted" style="margin:0">{{ r.q.explanation }}</p>{% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

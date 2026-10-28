@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Mock Interview{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Mock Interview</h1>
+  <p>{% for c in categories %}<a class="tag big {{ 'active' if c == category }}" href="{{ url_for('career.mock', category=c) }}">{{ c }}</a> {% endfor %}</p>
+  <form method="post" class="form card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="category" value="{{ category }}">
+    <input type="hidden" name="question" value="{{ question }}">
+    <h3>{{ question }}</h3>
+    <label>Your answer <textarea name="answer" rows="6" maxlength="2000" required>{{ answer or '' }}</textarea></label>
+    <button class="btn" type="submit">Check my answer</button>
+    <a class="btn btn-outline" href="{{ url_for('career.mock', category=category) }}">New question</a>
+  </form>
+  {% if model_answer %}<div class="card"><h3>Sample answer</h3><p>{{ model_answer }}</p></div>{% endif %}
+  {% if feedback %}<div class="card"><h3>AI feedback</h3><p class="pre">{{ feedback }}</p></div>
+  {% elif answer and not ai %}<p class="muted">Compare your answer with the sample above. (AI feedback is available when the administrator enables the AI service.)</p>{% endif %}
+</section>
+{% endblock %}

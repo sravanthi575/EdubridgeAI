@@ -1,0 +1,78 @@
+{% set ICONS = {'python':'Py','html':'</>','css':'{ }','sql':'SQL','javascript':'JS','java':'Jv','security-fundamentals':'Sec','networking-basics':'Net','ai-fundamentals':'AI','machine-learning-basics':'ML','resume-writing':'CV','interview-preparation':'Q&A'} %}
+
+{# Icon from the sprite defined in base.html #}
+{% macro icon(name, label=None) -%}
+<svg class="icon" {% if label %}role="img" aria-label="{{ label }}"{% else %}aria-hidden="true" focusable="false"{% endif %}><use href="#i-{{ name }}"/></svg>
+{%- endmacro %}
+
+{# Simple inline illustrations (decorative) #}
+{% macro illus(name) -%}
+{% if name == 'books' -%}
+<svg class="illus" viewBox="0 0 240 160" aria-hidden="true" focusable="false">
+  <ellipse cx="120" cy="146" rx="104" ry="8" fill="var(--surface-2)"/>
+  <rect x="34" y="52" width="34" height="94" rx="5" fill="var(--brand)"/><path d="M42 72h18M42 80h18" stroke="var(--paper)" stroke-width="3" stroke-linecap="round"/>
+  <rect x="74" y="28" width="34" height="118" rx="5" fill="var(--hi)"/><path d="M82 52h18M82 60h18" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+  <rect x="114" y="62" width="34" height="84" rx="5" fill="var(--ink)"/><path d="M122 82h18M122 90h18" stroke="var(--paper)" stroke-width="3" stroke-linecap="round"/>
+  <g transform="rotate(13 188 146)"><rect x="168" y="58" width="34" height="88" rx="5" fill="var(--brand-strong)"/><path d="M176 78h18M176 86h18" stroke="var(--paper)" stroke-width="3" stroke-linecap="round"/></g>
+</svg>
+{%- elif name == 'chat' -%}
+<svg class="illus" viewBox="0 0 240 160" aria-hidden="true" focusable="false">
+  <ellipse cx="120" cy="148" rx="90" ry="7" fill="var(--surface-2)"/>
+  <rect x="30" y="20" width="120" height="58" rx="16" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>
+  <path d="M52 78 46 96 70 78z" fill="var(--surface-2)"/><path d="M48 42h72M48 56h48" stroke="var(--ink-2)" stroke-width="5" stroke-linecap="round"/>
+  <rect x="90" y="86" width="120" height="50" rx="16" fill="var(--brand)"/><path d="M188 136 196 152 170 136z" fill="var(--brand)"/>
+  <circle cx="122" cy="111" r="6" fill="var(--paper)"/><circle cx="148" cy="111" r="6" fill="var(--paper)"/><circle cx="174" cy="111" r="6" fill="var(--hi)"/>
+</svg>
+{%- elif name == 'target' -%}
+<svg class="illus" viewBox="0 0 240 160" aria-hidden="true" focusable="false">
+  <ellipse cx="120" cy="148" rx="90" ry="7" fill="var(--surface-2)"/>
+  <circle cx="110" cy="80" r="62" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>
+  <circle cx="110" cy="80" r="44" fill="var(--paper)" stroke="var(--brand)" stroke-width="6"/>
+  <circle cx="110" cy="80" r="24" fill="var(--hi)"/><circle cx="110" cy="80" r="8" fill="var(--ink)"/>
+  <path d="M110 80 190 22" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/><path d="M178 14l22 2-4 22z" fill="var(--brand)"/>
+</svg>
+{%- elif name == 'compass' -%}
+<svg class="illus" viewBox="0 0 240 160" aria-hidden="true" focusable="false">
+  <ellipse cx="120" cy="148" rx="90" ry="7" fill="var(--surface-2)"/>
+  <circle cx="120" cy="78" r="62" fill="var(--paper)" stroke="var(--ink)" stroke-width="5"/>
+  <circle cx="120" cy="78" r="50" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="3 6"/>
+  <path d="M120 38 138 78 120 118 102 78z" fill="var(--hi)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/><path d="M120 38 138 78H102z" fill="var(--brand)"/>
+  <circle cx="120" cy="78" r="5" fill="var(--ink)"/>
+</svg>
+{%- endif %}
+{%- endmacro %}
+
+{% macro badge(course) -%}
+<span class="badge" aria-hidden="true">{{ ICONS.get(course.slug, course.title[:2]) }}</span>
+{%- endmacro %}
+
+{% macro cat_class(course) -%}cat-{{ course.category|lower|replace(' ', '-') }}{%- endmacro %}
+
+{% macro course_card(course, percent=None) %}
+<article class="card course-card {{ cat_class(course) }}">
+  <div class="thumb">{{ badge(course) }}<span class="cat">{{ course.category }}</span></div>
+  <div class="body">
+    <h3><a href="{{ url_for('courses.course_detail', slug=course.slug) }}">{{ course.title }}</a></h3>
+    <p>{{ course.description }}</p>
+    {% if percent is not none %}
+      <div class="progress" role="progressbar" aria-label="{{ course.title }} progress" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"><span style="width: {{ percent }}%"></span></div>
+      <div class="facts"><span>{{ percent }}% complete</span></div>
+    {% else %}
+      <div class="facts"><span>{{ icon('bar') }} {{ course.level }}</span><span>{{ icon('book') }} {{ course.lessons|length }} lesson{{ '' if course.lessons|length == 1 else 's' }}</span><span>{{ icon('clock') }} {{ course.lessons|sum(attribute='minutes') }} min</span></div>
+    {% endif %}
+  </div>
+</article>
+{% endmacro %}
+
+{# Form field with label, hint and inline error #}
+{% macro field(name, label, type='text', value='', errors=None, hint=None, autocomplete=None, required=True, maxlength=None, minlength=None, placeholder=None) %}
+{% set err = errors.get(name) if errors else None %}
+<label for="f-{{ name }}">{{ label }}{% if not required %} <span class="muted opt">(optional)</span>{% endif %}
+  <input id="f-{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value }}"
+    {% if required %}required{% endif %} {% if maxlength %}maxlength="{{ maxlength }}"{% endif %} {% if minlength %}minlength="{{ minlength }}"{% endif %}
+    {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %} {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+    {% if err %}aria-invalid="true"{% endif %} aria-describedby="{{ 'err-' ~ name if err else '' }}{{ ' hint-' ~ name if hint else '' }}">
+  {% if hint %}<small id="hint-{{ name }}">{{ hint }}</small>{% endif %}
+  {% if err %}<span class="field-error" id="err-{{ name }}" role="alert">{{ icon('alert') }}<span>{{ err }}</span></span>{% endif %}
+</label>
+{% endmacro %}

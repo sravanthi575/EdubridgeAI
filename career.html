@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Career Hub{% endblock %}
+{% block content %}
+<section class="container">
+  <h1>Career Hub</h1>
+  <div class="grid">
+    <a class="card linkcard" href="{{ url_for('career.resume') }}">{{ icon('file') }}<h3>Resume Builder</h3><p>Enter your details and get a clean, printable resume.</p></a>
+    <a class="card linkcard" href="{{ url_for('career.interview') }}">{{ icon('help') }}<h3>Interview Questions</h3><p>Python, SQL, web, Java, cybersecurity and HR.</p></a>
+    <a class="card linkcard" href="{{ url_for('career.mock') }}">{{ icon('mic') }}<h3>Mock Interview</h3><p>Answer a random question, then compare with a sample answer.</p></a>
+    <a class="card linkcard" href="{{ url_for('career.projects') }}">{{ icon('bulb') }}<h3>Project Ideas</h3><p>Build projects that show your skills.</p></a>
+    <a class="card linkcard" href="{{ url_for('career.skills') }}">{{ icon('bar') }}<h3>Skill Assessment</h3><p>See your level in each subject from your quiz results.</p></a>
+  </div>
+  <h2>Job preparation roadmaps</h2>
+  <p>{% for k, t in roadmaps %}<a class="tag big" href="{{ url_for('paths.index', goal=k) }}">{{ t }}</a> {% endfor %}</p>
+</section>
+{% endblock %}

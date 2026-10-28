@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }}{% endblock %}
+{% block content %}
+<section class="container">
+  <nav class="crumbs" aria-label="Breadcrumb"><span><a href="{{ url_for('courses.course_list') }}">Courses</a></span><span><a href="{{ url_for('courses.course_detail', slug=course.slug) }}">{{ course.title }}</a></span><span>Lesson {{ number }} of {{ course.lessons|length }}</span></nav>
+  <div class="lesson-layout">
+    <nav class="toc" aria-label="Lessons in this course">
+      <h2>{{ course.title }}</h2>
+      <ol>
+        {% for l in course.lessons %}
+        <li class="{{ 'current' if l.id == lesson.id }}"><a href="{{ url_for('courses.lesson', slug=course.slug, lesson_id=l.id) }}" {% if l.id == lesson.id %}aria-current="page"{% endif %}>{{ l.title }}{% if l.id in done_ids %}<span class="tick" aria-label="completed">✓</span>{% endif %}</a></li>
+        {% endfor %}
+      </ol>
+    </nav>
+    <article>
+      <h1>{{ lesson.title }}</h1>
+      <p class="muted small">About {{ lesson.minutes }} minutes to read and try.</p>
+      <div class="lesson-body">{{ lesson.content|safe }}</div>
+      <div class="lesson-actions">
+        {% if prev_lesson %}<a class="btn btn-outline" href="{{ url_for('courses.lesson', slug=course.slug, lesson_id=prev_lesson.id) }}">Previous lesson</a>{% endif %}
+        <form method="post" action="{{ url_for('courses.complete_lesson', slug=course.slug, lesson_id=lesson.id) }}" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn" type="submit">{% if done %}Continue{% elif next_lesson %}Mark complete and go to next lesson{% else %}Mark complete and take the quiz{% endif %}</button>
+        </form>
+        {% if next_lesson and not done %}<a class="btn btn-outline" href="{{ url_for('courses.lesson', slug=course.slug, lesson_id=next_lesson.id) }}">Skip to next</a>{% endif %}
+      </div>
+      <p class="muted small">Stuck on something? <a href="{{ url_for('ai_tutor.index') }}">Ask the AI Tutor</a> or <a href="{{ url_for('community.new_post') }}">post in the community</a>.</p>
+    </article>
+  </div>
+</section>
+{% endblock %}

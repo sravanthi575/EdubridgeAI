@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, badge, cat_class %}
+{% block title %}Practice Tests{% endblock %}
+{% block content %}
+<section class="container">
+  <h1>Practice Tests</h1>
+  <p>Choose a topic and difficulty. <a href="{{ url_for('quizzes.history') }}">View my quiz history</a>.</p>
+  <div class="grid">
+    {% for r in rows %}
+    <form method="get" action="{{ url_for('quizzes.take', slug=r.course.slug) }}" class="card {{ cat_class(r.course) }}" style="border-top:4px solid var(--c)">
+      <h3 style="display:flex;gap:10px;align-items:center">{{ badge(r.course) }} {{ r.course.title }}</h3>
+      <p class="muted small">{{ r.total }} questions · easy {{ r.counts.easy }} · medium {{ r.counts.medium }} · hard {{ r.counts.hard }}</p>
+      <label>Difficulty
+        <select name="difficulty"><option value="all">All</option><option>easy</option><option>medium</option><option>hard</option></select></label>
+      <label>Questions <input type="number" name="n" value="10" min="1" max="20"></label>
+      <button class="btn" type="submit" style="margin-top:12px">{{ icon('play') }} Start quiz</button>
+    </form>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

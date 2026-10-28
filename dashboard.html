@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% from "_macros.html" import course_card, icon, illus %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="container">
+  <div class="page-head"><h1>Welcome back, {{ current_user.name.split()[0] }}</h1>
+    <p>{% if streak %}You are on a {{ streak }}-day learning streak. Keep it going with one lesson today.{% else %}Complete a lesson or a quiz today to start your learning streak.{% endif %}</p></div>
+
+  {% if resume %}
+  <div class="resume-card">
+    <div><h2>Continue where you left off</h2><p>{{ resume[0].title }}: {{ resume[1].title }}</p></div>
+    <a class="btn" href="{{ url_for('courses.lesson', slug=resume[0].slug, lesson_id=resume[1].id) }}">{{ icon('play') }} Continue lesson</a>
+  </div>
+  {% endif %}
+
+  <div class="grid stats">
+    <div class="card stat">{{ icon('book') }}<strong>{{ rows|length }}</strong><span>Enrolled courses</span></div>
+    <div class="card stat">{{ icon('check') }}<strong>{{ lessons_done }}</strong><span>Completed lessons</span></div>
+    <div class="card stat">{{ icon('target') }}<strong>{{ quizzes_done }}</strong><span>Quizzes taken</span></div>
+    <div class="card stat">{{ icon('trophy') }}<strong>{{ (average ~ '%') if average is not none else '–' }}</strong><span>Quiz average</span></div>
+    <div class="card stat hi">{{ icon('flame') }}<strong>{{ streak }}</strong><span>Day streak</span></div>
+  </div>
+
+  <div class="quick" aria-label="Quick actions">
+    <a href="{{ url_for('ai_tutor.index') }}">{{ icon('bot') }} Ask the AI Tutor</a>
+    <a href="{{ url_for('quizzes.index') }}">{{ icon('target') }} Take a quiz</a>
+    <a href="{{ url_for('paths.index') }}">{{ icon('compass') }} My learning path</a>
+    <a href="{{ url_for('career.resume') }}">{{ icon('file') }} Build a resume</a>
+  </div>
+
+  <div class="widgets">
+    <div class="card widget">
+      <h2>{{ icon('bar') }} Quiz scores</h2><p class="sub">Your last {{ chart.scores|length or 10 }} quizzes, in percent.</p>
+      {% if chart.scores %}
+        <div class="skeleton"><canvas data-chart="line" data-max="100" data-label="Quiz score (%)" role="img" aria-label="Line chart of recent quiz scores: {{ chart.scores|join(', ') }} percent" data-labels='{{ chart.labels|tojson }}' data-values='{{ chart.scores|tojson }}'></canvas></div>
+      {% else %}
+        <div class="empty">{{ illus('target') }}<p><strong>No quiz scores yet.</strong></p><a class="btn btn-outline btn-small" href="{{ url_for('quizzes.index') }}">Take a practice test</a></div>
+      {% endif %}
+    </div>
+    <div class="card widget">
+      <h2>{{ icon('book') }} Course progress</h2><p class="sub">How much of each course you have finished.</p>
+      {% if course_chart.data %}
+        <div class="skeleton"><canvas data-chart="hbar" data-max="100" data-label="Complete (%)" role="img" aria-label="Bar chart of progress in each enrolled course" data-labels='{{ course_chart.labels|tojson }}' data-values='{{ course_chart.data|tojson }}'></canvas></div>
+      {% else %}
+        <div class="empty">{{ illus('books') }}<p><strong>No courses yet.</strong></p><a class="btn btn-small" href="{{ url_for('courses.course_list') }}">Choose a course</a></div>
+      {% endif %}
+    </div>
+    <div class="card widget">
+      <h2>{{ icon('flame') }} This week</h2><p class="sub">Lessons completed and quizzes taken each day.</p>
+      <div class="skeleton"><canvas data-chart="week" data-label="Activities" role="img" aria-label="Bar chart of your activity over the last 7 days: {{ week.data|join(', ') }}" data-labels='{{ week.labels|tojson }}' data-values='{{ week.data|tojson }}'></canvas></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h2 style="margin-top:0">My courses</h2>
+      {% if rows %}<div class="stack">{% for r in rows %}{{ course_card(r.course, r.percent) }}{% endfor %}</div>
+      {% else %}<div class="empty">{{ illus('books') }}<p><strong>You have not started a course yet.</strong></p><a class="btn" href="{{ url_for('courses.course_list') }}">Choose your first course</a></div>{% endif %}
+    </div>
+    <div>
+      <h2 style="margin-top:0">Recent activity</h2>
+      {% if activities %}<ul class="plain activity">{% for a in activities %}<li>{{ icon('check') }}<span>{{ a.text }}</span><time class="muted small" datetime="{{ a.created_at.isoformat() }}">{{ a.created_at.strftime('%d %b, %H:%M') }}</time></li>{% endfor %}</ul>
+      {% else %}<div class="empty"><p class="muted">Your lessons and quizzes will appear here.</p></div>{% endif %}
+    </div>
+  </div>
+
+  {% if recommended %}
+  <h2>Recommended for you</h2>
+  <div class="grid">{% for c in recommended %}{{ course_card(c) }}{% endfor %}</div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/chart.umd.js') }}" defer></script>
+{% endblock %}

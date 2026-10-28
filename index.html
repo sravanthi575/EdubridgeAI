@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% from "_macros.html" import course_card, icon, illus %}
+{% block content %}
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <h1>Free courses, an AI tutor, and a clear path to your first job.</h1>
+      <p class="lead">Learn Python, web development, SQL, cybersecurity and AI at your own pace. Practise with quizzes, get help when you are stuck, and prepare for interviews. No fees, ever.</p>
+      <form class="search" method="get" action="{{ url_for('courses.course_list') }}" role="search">
+        <input type="search" name="q" placeholder="Search courses, e.g. Python" aria-label="Search courses" maxlength="80">
+        <button class="btn" type="submit">Find courses</button>
+      </form>
+      <p class="hero-meta"><span><strong>{{ stats.courses }}</strong> free courses</span><span><strong>{{ stats.lessons }}</strong> lessons</span><span><strong>Quizzes</strong> with instant feedback</span></p>
+    </div>
+
+    <svg class="bridge" viewBox="0 0 560 340" role="img" aria-label="An arched bridge from where you are now to your goal, with four stops along it: Learn, Practice, Ask AI and Get hired.">
+      <path class="b-water" d="M0 308 Q70 296 140 308 T280 308 T420 308 T560 308"/>
+      <path class="b-water" d="M0 326 Q70 314 140 326 T280 326 T420 326 T560 326" opacity=".55"/>
+      <line class="b-hang" x1="118.7" y1="158.8" x2="118.7" y2="250"/><line class="b-hang" x1="223.4" y1="113.2" x2="223.4" y2="250"/>
+      <line class="b-hang" x1="336.6" y1="113.2" x2="336.6" y2="250"/><line class="b-hang" x1="441.3" y1="158.8" x2="441.3" y2="250"/>
+      <path class="b-hi" d="M40 250 C140 60 420 60 520 250"/>
+      <path class="b-arch" d="M40 250 C140 60 420 60 520 250"/>
+      <line class="b-deck" x1="14" y1="250" x2="546" y2="250"/>
+      <circle class="b-node n1" cx="118.7" cy="158.8" r="9"/><circle class="b-node n2" cx="223.4" cy="113.2" r="9"/>
+      <circle class="b-node n3" cx="336.6" cy="113.2" r="9"/><circle class="b-node n4" cx="441.3" cy="158.8" r="9"/>
+      <text class="lbl n1" x="118.7" y="136" text-anchor="middle">Learn</text><text class="lbl n2" x="223.4" y="90" text-anchor="middle">Practice</text>
+      <text class="lbl n3" x="336.6" y="90" text-anchor="middle">Ask AI</text><text class="lbl n4" x="441.3" y="136" text-anchor="middle">Get hired</text>
+      <text class="bank-label" x="40" y="282" text-anchor="middle">You are here</text><text class="bank-label" x="520" y="282" text-anchor="middle">Your goal</text>
+    </svg>
+  </div>
+</section>
+
+<section class="container" style="padding-top:8px">
+  <div class="section-head"><h2 style="margin-top:0">Start with a course</h2><a href="{{ url_for('courses.course_list') }}">Browse all {{ stats.courses }} courses</a></div>
+  <div class="grid">{% for c in popular %}{{ course_card(c) }}{% endfor %}</div>
+</section>
+
+<section class="container">
+  <h2 style="margin-top:0">How it works</h2>
+  <ol class="steps">
+    <li><h3>Create a free account</h3><p>It takes a minute and saves your progress and scores.</p></li>
+    <li><h3>Learn and practise</h3><p>Read a short lesson, try the exercise, then test yourself with a quiz.</p></li>
+    <li><h3>Get career-ready</h3><p>Build your resume, rehearse interviews and follow a path to your goal.</p></li>
+  </ol>
+  <p style="margin-top:22px"><a class="btn" href="{{ url_for('auth.register') }}">Sign up free</a> <a class="btn btn-outline" href="{{ url_for('courses.course_list') }}">Browse courses first</a></p>
+</section>
+
+<section class="band">
+  <div class="container">
+    <h2 style="margin-top:0">Everything between “I want to learn” and “I got the job”</h2>
+    <ul class="feature-list">
+      <li><h3>{{ icon('book') }} Courses</h3><p>Short lessons with code you can copy, plus an exercise at the end of each one.</p><a href="{{ url_for('courses.course_list') }}">Open courses</a></li>
+      <li><h3>{{ icon('target') }} Practice tests</h3><p>Pick a topic and difficulty. See what you got wrong and why, straight away.</p><a href="{{ url_for('quizzes.index') }}">Take a test</a></li>
+      <li><h3>{{ icon('compass') }} Learning paths</h3><p>Tell us your goal and daily study time. We list what to learn next and about how many days it takes.</p><a href="{{ url_for('paths.index') }}">Plan my path</a></li>
+      <li><h3>{{ icon('briefcase') }} Career Hub</h3><p>Build a resume, rehearse interview answers and pick a project that shows your skills.</p><a href="{{ url_for('career.hub') }}">Prepare for work</a></li>
+      <li><h3>{{ icon('grad') }} Scholarships</h3><p>Official links to scholarships and free courses, with the date we last checked each one.</p><a href="{{ url_for('scholarships.index') }}">Find opportunities</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="container">
+  <div class="two-col" style="align-items:center">
+    <div>
+      <h2 style="margin-top:0">Stuck? Ask the AI Tutor.</h2>
+      <p>Ask in English, Telugu or Hindi, and choose beginner, intermediate or advanced explanations. You can also ask for practice questions on any topic.</p>
+      <p class="muted small">The AI is optional. If it is switched off, the tutor points you to the closest lesson instead.</p>
+      <a class="btn" href="{{ url_for('ai_tutor.index') }}">{{ icon('bot') }} Try the AI Tutor</a>
+    </div>
+    <div class="demo" aria-label="Example conversation">
+      <div class="msg user">Explain loops in Python simply</div>
+      <div class="msg bot">A loop repeats a block of code. Use <code>for</code> when you know how many times:
+
+for i in range(3):
+    print("Hello")
+
+This prints Hello three times. Use <code>while</code> when you repeat until something changes.</div>
+      <p class="muted small" style="margin:0">Example of a typical answer.</p>
+    </div>
+  </div>
+</section>
+
+<section class="dark-band">
+  <div class="container two-col" style="align-items:center;padding-block:44px">
+    <div><h2 style="margin:0 0 8px">Make your resume today.</h2><p style="margin:0">Fill in one form, review the preview, then print it or save it as a PDF.</p></div>
+    <div><a class="btn btn-hi" href="{{ url_for('career.resume') }}">Build my resume</a></div>
+  </div>
+</section>
+
+<section class="container">
+  <h2 style="margin-top:0">What students can expect</h2>
+  <p class="muted small">These are placeholder quotes for layout. Replace them with real feedback from your students.</p>
+  <div class="grid">
+    <blockquote class="card">“Short lessons and quizzes helped me study a little every day.”<footer>Sample student</footer></blockquote>
+    <blockquote class="card">“The interview questions made me feel ready for my first interview.”<footer>Sample student</footer></blockquote>
+    <blockquote class="card">“The learning path told me exactly what to study next.”<footer>Sample student</footer></blockquote>
+  </div>
+</section>
+{% endblock %}

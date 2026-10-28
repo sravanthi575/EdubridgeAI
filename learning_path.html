@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Learning Path{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>My learning path</h1>
+  <form method="get" class="filters">
+    <label>Goal <select name="goal">{% for k, t in goals %}<option value="{{ k }}" {{ 'selected' if k == path.goal }}>{{ t }}</option>{% endfor %}</select></label>
+    <label>Level <select name="level">{% for l in levels %}<option value="{{ l }}" {{ 'selected' if l == path.level }}>{{ l|capitalize }}</option>{% endfor %}</select></label>
+    <label>Minutes/day <input type="number" name="minutes" min="15" max="480" value="{{ path.daily_minutes }}"></label>
+    <button class="btn" type="submit">Update plan</button>
+  </form>
+  <h2>{{ path.title }}</h2>
+  <div class="progress"><span style="width: {{ path.percent }}%"></span></div>
+  <p class="muted">{{ path.percent }}% complete{% if path.days_left %} · about {{ path.days_left }} day{{ '' if path.days_left == 1 else 's' }} left at {{ path.daily_minutes }} min/day{% endif %}</p>
+  <ol class="path">
+    {% for s in path.steps %}
+    <li class="{{ 'done-step' if s.done }}">
+      <div>
+        <strong>{{ s.title }}</strong>{% if s.done %} <span class="done">✓</span>{% endif %}
+        <div class="muted small">{{ s.note }} · ~{{ s.minutes }} min</div>
+        {% if s.link %}<a class="small" href="{{ s.link }}">Open</a>{% endif %}
+      </div>
+      {% if not s.auto %}
+      <form method="post" action="{{ url_for('paths.toggle') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="goal" value="{{ path.goal }}"><input type="hidden" name="step" value="{{ s.index }}">
+        <input type="hidden" name="level" value="{{ path.level }}"><input type="hidden" name="minutes" value="{{ path.daily_minutes }}">
+        <button class="btn btn-small btn-outline" type="submit">{{ 'Undo' if s.done else 'Mark done' }}</button>
+      </form>
+      {% else %}<span class="muted small">auto-tracked</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  <form method="post" action="{{ url_for('paths.save') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="goal" value="{{ path.goal }}"><input type="hidden" name="level" value="{{ path.level }}"><input type="hidden" name="minutes" value="{{ path.daily_minutes }}">
+    <button class="btn" type="submit">Save as my default plan</button>
+  </form>
+</section>
+{% endblock %}

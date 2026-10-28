@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Project Ideas{% endblock %}
+{% block content %}
+<section class="container">
+  <h1>Project Ideas</h1>
+  <p>Build a few of these, put them on GitHub with a clear README, and add them to your resume.</p>
+  <div class="grid">
+    {% for title, level, skills, desc in ideas %}
+    <div class="card"><span class="tag">{{ level }}</span><h3>{{ title }}</h3><p>{{ desc }}</p><p class="muted small">Skills: {{ skills }}</p></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

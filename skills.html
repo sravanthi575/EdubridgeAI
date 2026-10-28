@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Skill Assessment{% endblock %}
+{% block content %}
+<section class="container narrow">
+  <h1>Skill Assessment</h1>
+  <p>Your level is based on your average quiz score in each subject (below 50% Beginner, 50-79% Intermediate, 80%+ Advanced).</p>
+  <table class="table"><thead><tr><th>Subject</th><th>Average</th><th>Attempts</th><th>Level</th><th></th></tr></thead><tbody>
+    {% for i in items %}<tr><td>{{ i.course.title }}</td><td>{{ (i.avg ~ '%') if i.avg is not none else '–' }}</td><td>{{ i.attempts }}</td><td>{{ i.label }}</td>
+      <td><a href="{{ url_for('quizzes.take', slug=i.course.slug) }}">Take quiz</a></td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

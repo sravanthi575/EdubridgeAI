@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import course_card, illus %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<section class="container">
+  <div class="page-head"><h1>Free courses</h1><p>Every course is free. Start anywhere: your progress is saved when you log in.</p></div>
+  <form method="get" class="filters" role="search">
+    <input type="search" name="q" value="{{ q }}" placeholder="Search courses" aria-label="Search courses" maxlength="80">
+    {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+    <button class="btn" type="submit">Search</button>
+  </form>
+  <div class="chips" aria-label="Filter by subject">
+    <a class="tag big {{ 'active' if not category }}" href="{{ url_for('courses.course_list', q=q or None) }}">All subjects</a>
+    {% for c in categories %}<a class="tag big {{ 'active' if c == category }}" href="{{ url_for('courses.course_list', category=c, q=q or None) }}">{{ c }}</a>{% endfor %}
+  </div>
+  <p class="muted small" aria-live="polite">{{ courses|length }} course{{ '' if courses|length == 1 else 's' }}{% if q %} matching “{{ q }}”{% endif %}</p>
+  <div class="grid">{% for c in courses %}{{ course_card(c) }}{% endfor %}</div>
+  {% if not courses %}<div class="empty">{{ illus('books') }}<p><strong>No courses match that search.</strong></p><p>Try a shorter word like “web”, or <a href="{{ url_for('courses.course_list') }}">see every course</a>.</p></div>{% endif %}
+</section>
+{% endblock %}
